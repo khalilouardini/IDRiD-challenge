@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore")
 class IDRiDDetectionDataset(Dataset):
     """Detection of OD ans Fovea dataset."""
 
-    def __init__(self, csv_od, csv_fovea, root_dir, transform=None):
+    def __init__(self, csv_od, csv_fovea, root_dir, transform=None, set_type = "train"):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -34,9 +34,14 @@ class IDRiDDetectionDataset(Dataset):
         self.fovea = pd.read_csv(csv_fovea)
         self.root_dir = root_dir
         self.transform = transform
+        self.set_type = set_type
 
     def __len__(self):
-        return len(self.od)
+        if self.set_type=="train":
+            return 413
+        else :
+            return 103
+        
 
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
