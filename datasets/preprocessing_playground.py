@@ -1,8 +1,6 @@
-from PIL import Image
-import os
 import matplotlib.pyplot as plt
-from IDRiDGradingDataset import IDRiDGradingDataset
-from torch.utils.data import Dataset, DataLoader
+from datasets.IDRiDGradingDataset import IDRiDGradingDataset
+from torch.utils.data import DataLoader
 from torchvision import transforms, utils
 
 def show_batch(sample_batched):
@@ -16,10 +14,11 @@ def show_batch(sample_batched):
     plt.title('Batch from dataloader')
 
 if __name__ == "__main__":
+
     #init
     root_dir = 'B. Disease Grading/1. Original Images/a. Training Set/'
     csv_file = 'B. Disease Grading/2. Groundtruths/a. IDRiD_Disease Grading_Training Labels.csv'
-    bengraham = False
+    bengraham = True
 
     # transform (preprocessing)
     scale = transforms.Resize((512, 512))

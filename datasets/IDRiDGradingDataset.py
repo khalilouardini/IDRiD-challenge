@@ -4,10 +4,8 @@ import torch
 import pandas as pd
 from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
-from bengraham_preprocessing import preprocess
+from torch.utils.data import Dataset
+from datasets.bengraham_preprocessing import preprocess
 
 class IDRiDGradingDataset(Dataset):
     """IDRiD grading dataset."""
