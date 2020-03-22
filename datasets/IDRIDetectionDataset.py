@@ -47,9 +47,6 @@ class IDRID_Detection_Dataset(Dataset):
         self.box_width_Fovea = box_width_Fovea
         self.image_size = image_size
         
-        # initialize class parameters
-        self.sample = {} # sample containing image, OD, Fovea for a given index
-        self.scale_factor = np.ones(2) # factor of rescaling the image
        
 
     def __len__(self):
@@ -60,25 +57,29 @@ class IDRID_Detection_Dataset(Dataset):
                 break
         return i
         
-    def __reshape__(self, image):
+    def __reshape__(self, sample):
         """reshape the image to a given size and update coordinates
         NB : the coordinates depend on the size of the image
              we use self.scale_factor to track th changes  
         """
         # resize + to tensor
+        scale_factor = np.ones(2)
+        image = sample['image']
         init_shape = np.array(list(image.size))
         scale = transforms.Resize(self.image_size)
         to_tensor = transforms.ToTensor()
         composed = transforms.Compose([scale, to_tensor])
-        self.sample['image'] = composed(self.sample['image'])
-        final_shape = np.array([self.sample['image'].shape[1], self.sample['image'].shape[2]])
+        sample['image'] = composed(sample['image'])
+        final_shape = np.array([sample['image'].shape[1], sample['image'].shape[2]])
         # update coordinates
         if not set(final_shape) == set(init_shape):
-            self.scale_factor *= (final_shape/init_shape)
-            self.sample['OD'] *=  self.scale_factor
-            self.sample['Fovea'] *= self.scale_factor  
+            scale_factor *= (final_shape/init_shape)
+            sample['OD'] *=  scale_factor
+            sample['Fovea'] *= scale_factor  
             
-    def __get_boxes__(self, tpe ='OD'):
+        return sample, scale_factor
+            
+    def __get_boxes__(self,sample, tpe ='OD'):
         """return the bounding boxes for a given type [OD, Fovea]"""
         
         # create image boxes
@@ -88,10 +89,10 @@ class IDRID_Detection_Dataset(Dataset):
             width = self.box_width_Fovea
             
         bbox = []
-        bbox.append(self.sample[tpe][0]-width[0]/2)
-        bbox.append(self.sample[tpe][1]-width[1]/2)
-        bbox.append(self.sample[tpe][0]+width[0]/2)
-        bbox.append(self.sample[tpe][1]+width[1]/2)
+        bbox.append(sample[tpe][0]-width[0]/2)
+        bbox.append(sample[tpe][1]-width[1]/2)
+        bbox.append(sample[tpe][0]+width[0]/2)
+        bbox.append(sample[tpe][1]+width[1]/2)
         
         return bbox
 
@@ -112,14 +113,14 @@ class IDRID_Detection_Dataset(Dataset):
         image = Image.open(img_path)
         
         # create the sample dictionary
-        self.sample = {'image': image, 'OD': OD, 'Fovea': Fovea }
+        sample = {'image': image, 'OD': OD, 'Fovea': Fovea }
         # reshape the image and update coordinates
-        self.__reshape__(image)
+        sample, scale_factor = self.__reshape__(sample)
   
         # create bounding boxes
         boxes = []
-        boxes.append(self.__get_boxes__(tpe ='OD'))
-        boxes.append(self.__get_boxes__(tpe ='Fovea'))
+        boxes.append(self.__get_boxes__(sample, tpe ='OD'))
+        boxes.append(self.__get_boxes__(sample, tpe ='Fovea'))
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
 
         #create labels
@@ -136,15 +137,16 @@ class IDRID_Detection_Dataset(Dataset):
         target["boxes"] = boxes
         target["labels"] = labels
         target["image_id"] = image_id
+        #target["area"] = torch.tensor([60*60],dtype=torch.int64)
         target["area"] = torch.tensor([self.box_width_OD[0]*self.box_width_OD[1], \
                                        self.box_width_Fovea[0]*self.box_width_Fovea[1] ],\
                                         dtype=torch.int64)
         target["iscrowd"] = iscrowd
  
         # apply transformations
-        img = self.sample['image']
+        img = sample['image']
         if self.transform is not None:
             img , target = self.transform(img, target)
 
             
-        return img, target, self.scale_factor
+        return img, target, scale_factor
