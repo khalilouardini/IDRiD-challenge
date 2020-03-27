@@ -24,7 +24,7 @@ You can also plot a prediction for a given image by providing its index in the d
 (be careful to not exceed the length of the dataset)
 
 ```bash
-python evaluate.py --model "RetinaNet" --depth 101 --weights models/RetinaNet.PTH --dataset "test"
+python evaluate.py --model "RetinaNet" --depth 101 --weights models/RetinaNet.PTH --dataset "test" --img_idx idx
 ```
 You will get a plot like :
 
