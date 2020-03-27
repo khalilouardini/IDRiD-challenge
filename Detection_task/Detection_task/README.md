@@ -15,20 +15,19 @@ python train.py --model "FasterRCNN" --epochs 10
 python train.py --model "RetinaNet" --depth 101 --epochs 10
 ```
 
-## Evaluation
+## Inference
 This script evaluates the performance of the model on a given dataset
 
 ```bash
-python evaluate.py --model "RetinaNet" --depth 101 --weights "./models/RetinaNet.pth" --dataset "test"
+python inference.py --task "evaluate" --model "RetinaNet" --depth 101 --weights "./models/RetinaNet.pth" --dataset "test"
 ```
 This will compute the average IoU and euclidean distances for both optical disc and Fovea for the given dataset.
 
-## Inference
 You can also plot a prediction for a given image by providing its index in the dataset by adding an index as integer
 (be careful to not exceed the length of the dataset)
 
 ```bash
-python infer.py --model "RetinaNet" --depth 101 --weights models/RetinaNet.PTH --dataset "test" --img_idx idx
+python inference.py --task "infer" --model "RetinaNet" --depth 101 --weights models/RetinaNet.PTH --dataset "test" --img_idx idx
 ```
 The figure will be saved in ./figures/ folder
 You will get a plot like :
