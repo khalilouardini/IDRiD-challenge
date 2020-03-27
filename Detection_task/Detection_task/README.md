@@ -28,7 +28,7 @@ python evaluate.py --model "RetinaNet" --depth 101 --weights models/RetinaNet.PT
 ```
 You will get a plot like :
 
-![example prediction](./figures/figure_1.png)
+![example prediction](./figures/Figure_1.png)
 
 ## Data
 
