@@ -7,7 +7,7 @@ conda install -c albumentations albumentations
 ```
 
 ## Training
-You should provide a choice for he model as argument ["RetinaNet", "FasterRCNN"]
+You should provide a choice for the model as argument ["RetinaNet", "FasterRCNN"]
 
 To launch the training script:
 ```bash
