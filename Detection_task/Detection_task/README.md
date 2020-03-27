@@ -27,7 +27,7 @@ You can also plot a prediction for a given image by providing its index in the d
 (be careful to not exceed the length of the dataset)
 
 ```bash
-python inference.py --task "infer" --model "RetinaNet" --depth 101 --weights models/RetinaNet.PTH --dataset "test" --img_idx idx
+python inference.py --task "infer" --model "RetinaNet" --depth 101 --weights "./models/RetinaNet.pth" --dataset "test" --img_idx idx
 ```
 The figure will be saved in ./figures/ folder
 You will get a plot like :
