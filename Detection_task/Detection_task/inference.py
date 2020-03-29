@@ -83,11 +83,7 @@ if __name__ == "__main__":
             
     else :
         # Create the model
-        if depth == 18:
-            model = models.resnet18(num_classes=3, pretrained=True)
-        elif depth == 34:
-            model = models.resnet34(num_classes=3, pretrained=True)
-        elif depth == 50:
+        if depth == 50:
             model = models.resnet50(num_classes=3, pretrained=True)
         elif depth == 101:
             model = models.resnet101(num_classes=3, pretrained=True)

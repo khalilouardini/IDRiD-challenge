@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, choices=["FasterRCNN", "RetinaNet"],
                     help = "choose model FasterRCNN or RetinaNet.", required=True)
 parser.add_argument("--epochs", type=int, default = 5)
-parser.add_argument("--depth", type=int, choices=[18,34,50,101,152], default = 101,
+parser.add_argument("--depth", type=int, choices=[50,101,152], default = 101,
                     help = "depth of resnet modele for RetinaNet.")
 parser.add_argument("--print_freq", type=int, default = 50)
 
@@ -86,11 +86,7 @@ if __name__ == "__main__":
             
     else :
         # Create the model
-        if depth == 18:
-            model = models.resnet18(num_classes=3, pretrained=True)
-        elif depth == 34:
-            model = models.resnet34(num_classes=3, pretrained=True)
-        elif depth == 50:
+        if depth == 50:
             model = models.resnet50(num_classes=3, pretrained=True)
         elif depth == 101:
             model = models.resnet101(num_classes=3, pretrained=True)
@@ -100,12 +96,17 @@ if __name__ == "__main__":
         model.to(device)
         model.training = True
         model.train()
-        #model.module.freeze_bn()
+        model.freeze_bn()
         train_one_epoch = train_one_epoch_RetinaNet
         
         
     optimizer = optim.Adam(model.parameters(), lr=1e-5)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
+    if args.model == "FasterRCNN" :
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2,gamma=0.5)
+        
+    else :
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=1, verbose=True)
+
 
 
     max_iou = 0.0
@@ -113,7 +114,11 @@ if __name__ == "__main__":
         # Train for one epoch, printing every 10 iterations
         epoch_loss = train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq)
         iou = evaluate(model, test_set, device, args.model)
-        scheduler.step(np.mean(epoch_loss))
+        if args.model == "FasterRCNN" :
+            scheduler.step()
+        else :
+            scheduler.step(np.mean(epoch_loss))
+        # save best model        
         if iou > max_iou :
             max_iou = iou
             save_path = "./models/{}.pth".format(args.model)
