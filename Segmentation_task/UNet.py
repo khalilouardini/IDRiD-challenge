@@ -18,7 +18,6 @@ def _make_nConv(in_channels, out_channels, nb_Conv, activation='ReLU'):
     return nn.Sequential(*layers)
 
 
-# Question here
 class ConvBatchNorm(nn.Module):
     """(convolution => [BN] => ReLU)"""
 
@@ -87,6 +86,7 @@ class UNet(nn.Module):
     self.up4 = UpBlock(128, 64, nb_Conv=2)
     self.outc = nn.Conv2d(64, n_classes, kernel_size=3, stride=1, padding=1)
     self.last_activation = get_activation('Softmax')
+    # self.last_activation = nn.Sigmoid() # if using BCELoss
 
   def forward(self, x):
     # Question here
@@ -101,4 +101,6 @@ class UNet(nn.Module):
     x = self.up3(x, x2)
     x = self.up4(x, x1)
     logits = self.last_activation(self.outc(x))
+    # logits = self.outc(x) # if using BCEWithLogitsLoss
     return logits
+
