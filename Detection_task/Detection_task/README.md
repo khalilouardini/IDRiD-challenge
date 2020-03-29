@@ -39,3 +39,9 @@ You will get a plot like :
 The data folders are in the same format as provided in the IDRID challenge
 You can find the data here (https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid).
 
+## Weights
+
+We provide the weights of our best performing model (RetinaNet with depth 101)
+You can download it from here :
+https://drive.google.com/file/d/15JVhJhNbLf5tm4I9gIJFP4Hk5Ln2UvQt/view?usp=sharing
+
