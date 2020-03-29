@@ -12,7 +12,46 @@ import errno
 import os
 import numpy as np
 
-def get_boxes(model, dataset, threshold = 0.008, img_idx = 0):
+
+def get_annotations_retinanet(target):
+    """Format the target dictionary from the dataset to annotations 
+    to be compatible with retinanet"""
+    annotations  = np.zeros((0, 5))
+    annotation = np.zeros((1, 5))
+    for i in range(2):
+        
+        annotation[0, 0] = target["boxes"][i][0]
+        annotation[0, 1] = target["boxes"][i][1]
+        annotation[0, 2] = target["boxes"][i][2]
+        annotation[0, 3] = target["boxes"][i][3]
+        annotation[0, 4]  = i+1
+        annotations  = np.append(annotations, annotation, axis=0)
+
+    annotations = np.expand_dims(np.append(annotations, annotation, axis=0), axis=0)
+    annotations = torch.from_numpy(annotations).float()
+    
+    return annotations
+    
+
+def get_boxes(model, dataset, threshold = 0.008, img_idx = 0, model_type="FasterRCNN"):
+    """method that computes the predicted boxes and filter them using non maximum supression
+    Params :
+    --------
+        model : The model used to make predictions
+        dataset
+        threshold: used for NMS
+        img_idx : img for which we want to extract predicted boxes
+        model_type :   "FasterRCNN" or "RetinaNet""
+        
+    Returns :
+    --------
+        img : img if index img_idx in dataset
+        OD_true_box : ground truth box for OD
+        Fovea_true_box : ground truth box for Fovea
+        OD_predicted_box : predited OD boxe
+        Fovea_predicted_box : prediceted Fovea box after NMS
+    
+    """
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     # Select image in test set
     img, target,_ = dataset[img_idx]
@@ -24,13 +63,20 @@ def get_boxes(model, dataset, threshold = 0.008, img_idx = 0):
         
         
     with torch.no_grad(): 
-        prediction = model([img.to(device)])
+        if model_type =="FasterRCNN":
+            prediction = model([img.to(device)])
+            boxes = prediction[0]['boxes'].cpu().numpy()
+            scores = prediction[0]['scores'].cpu().numpy()
+            labels = prediction[0]['labels'].cpu().numpy()
+        else :
+            scores, labels, boxes = model(img.unsqueeze(0).cuda())
+            scores = scores.cpu().numpy()
+            labels = labels.cpu().numpy()
+            boxes  = boxes.cpu().numpy()
+            
         
-    # Retrieve predicted bounding boxes and scores 
-    boxes = prediction[0]['boxes'].cpu().numpy()
-    scores = prediction[0]['scores'].cpu().numpy()
-    labels = prediction[0]['labels'].cpu().numpy()
-        
+    # Retrieve predicted bounding boxes and scores
+    
     # retrieve OD box :
     OD_predicted_box = boxes[0]
         
@@ -64,13 +110,15 @@ def get_boxes(model, dataset, threshold = 0.008, img_idx = 0):
     return img, OD_true_box, Fovea_true_box, OD_predicted_box, Fovea_predicted_box
 
 def get_center(box):
+    """return the center of the box"""
     x1,y1,x2,y2 = box
     return [(x1+x2)/2, (y1+y2)/2]
     
-def get_center_distance(boxA, boxB):
+def get_center_distance(boxA, boxB, factor=None):
+    """returns the distance between two centers multiplied by the scaling factor"""
     centA = get_center(boxA)
     centB = get_center(boxB)
-    return np.sqrt((centA[0]-centB[0])**2+ (centA[1]-centB[1])**2 )
+    return np.sqrt( ((1/factor[0])**2) *(centA[0]-centB[0])**2+ ((1/factor[1])**2) *(centA[1]-centB[1])**2 )
         
 def get_mean_distance_OD_Fovea(dataset):
     dist = 0

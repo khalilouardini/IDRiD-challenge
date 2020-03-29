@@ -4,8 +4,6 @@ from torchvision.transforms import functional as F
 from torchvision import transforms
 
 
-
-        
 class Compose(object):
     def __init__(self, transformations):
         self.transformations = transformations
@@ -61,9 +59,8 @@ class ToTensor(object):
     
 
     
-    
 def get_transform(train):
-    
+    """Compose transforms to be applied to the train and validation sets"""
     transform = []
     # converts the image, a PIL image, into a PyTorch Tensor
     transform.append(ImageEnhencer())

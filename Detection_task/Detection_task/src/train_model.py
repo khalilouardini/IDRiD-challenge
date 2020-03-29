@@ -105,13 +105,13 @@ def evaluate(model, dataset, device, model_type):
         pred_boxes_OD = np.vstack((pred_boxes_OD, OD_predicted_box ))
         pred_boxes_Fovea = np.vstack((pred_boxes_Fovea, Fovea_predicted_box ))
         
-        dist_OD += ( 1/factor[0] )  * utils.get_center_distance(OD_true_box, OD_predicted_box)
-        dist_Fovea +=  ( 1/factor[1] )  * utils.get_center_distance(Fovea_true_box, Fovea_predicted_box)
+        dist_OD +=  utils.get_center_distance(OD_true_box, OD_predicted_box,factor)
+        dist_Fovea +=   utils.get_center_distance(Fovea_true_box, Fovea_predicted_box, factor)
     
     average_iou_OD = np.mean([IoU(gt_boxes_OD[i], pred_boxes_OD[i]) for i in range(len(gt_boxes_OD))])
-    print("\nAverage IoU for OD detection over validation set: {:.2f}".format(average_iou_OD))
+    print("\nAverage IoU for OD detection over validation set: {:.3f}".format(average_iou_OD))
     average_iou_Fovea = np.mean([IoU(gt_boxes_Fovea[i], pred_boxes_Fovea[i]) for i in range(len(gt_boxes_Fovea))])
-    print("Average IoU for Fovea detection over validation set: {:.2f}".format(average_iou_Fovea))
+    print("Average IoU for Fovea detection over validation set: {:.3f}".format(average_iou_Fovea))
     mean_dist_OD = dist_OD/dataset.__len__()
     print('Mean distance between OD centers over validation set: {:.3f}'.format(mean_dist_OD))   
     mean_dist_Fov = dist_Fovea/dataset.__len__()
