@@ -20,10 +20,8 @@ def scaleRadius(img, scale):
 
 scale = 300
 
-def preprocess(img_name, mypath, newpath):
-    print(img_name)
-    #new_img_name = 'prep_' + img_name
-    a = cv2.imread(mypath + img_name)
+def preprocess(mypath):
+    a = cv2.imread(mypath)
     a = scaleRadius(a, scale)
     a = cv2.addWeighted(a, 4, cv2.GaussianBlur(a, (0, 0),scale/30), -4, 128)
     b = np.zeros(a.shape)

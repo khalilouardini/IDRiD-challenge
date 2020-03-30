@@ -5,7 +5,7 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 from torch.utils.data import Dataset
-from datasets.bengraham_preprocessing import preprocess
+from Grading_task.datasets.bengraham_preprocessing import preprocess
 
 class IDRiDGradingDataset(Dataset):
     """IDRiD grading dataset."""
@@ -37,12 +37,14 @@ class IDRiDGradingDataset(Dataset):
 
         # image
         # get img path
-        img_path = os.path.join(self.root_dir,
-                                img_name+'.jpg')
+        if os.path.exists(os.path.join(self.root_dir, img_name+'.jpg')):
+            img_path = os.path.join(self.root_dir, img_name+'.jpg')
+        else:
+            img_path = os.path.join(self.root_dir, img_name + '.jpeg')
 
         # Bengraham preprocessing if necessary
         if self.bengraham:
-            image = preprocess(img_name+'.jpg', self.root_dir, img_name)
+            image = preprocess(img_path)
             image = Image.fromarray(np.uint8(image))
         else:
             image = Image.open(img_path)
