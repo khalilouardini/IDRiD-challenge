@@ -1,5 +1,6 @@
 import tensorflow as tf
 import torch
+from torch.utils.tensorboard import SummaryWriter
 import os
 import time
 import numpy as np
@@ -224,7 +225,7 @@ def train_loop(loader, model, criterion, optimizer, writer, epoch, lr_scheduler=
     return loss, mean_aupr
 
 
-def main_loop(data_path, batch_size=batch_size, model_type='UNet', green=False):
+def main_loop(data_path, batch_size=batch_size, model_type='UNet', green=False, tensorboard=True):
     # Load train and val data
     tasks = ['EX']
     data_path = data_path
@@ -268,7 +269,7 @@ def main_loop(data_path, batch_size=batch_size, model_type='UNet', green=False):
         print('log dir: ', log_dir)
         if not os.path.isdir(log_dir):
             os.makedirs(log_dir)
-        writer = torch.utils.tensorboard.SummaryWriter(log_dir)
+        writer = SummaryWriter(log_dir)
     else:
         writer = None
 
@@ -323,10 +324,11 @@ if __name__ == '__main__':
     sets_path = os.path.join(main_path, 'datasets/')
     csv_path = os.path.join(main_path, 'data/tumor_count.csv')
     data_folder = os.path.join(main_path, 'data/')
-    save_path = '/savefile/'
+    save_path = 'save/'
     loss_function = 'dice_loss'
     session_name = 'Test_session' + '_' + time.strftime('%m.%d %Hh%M')
     model_path = save_path + 'models/' + session_name + '/'
     tensorboard_folder = save_path + 'tensorboard_logs/'
 
-    model = main_loop(data_path=main_path, green=True)
+    model = main_loop(data_path=main_path, green=True, tensorboard=True)
+

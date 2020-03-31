@@ -115,18 +115,18 @@ class IDRiDDataset(Dataset):
         if self.transform:
             sample = self.transform(sample)
 
-        trans_image = sample['image']
-        plt.figure(figsize=(10, 10))
-        plt.subplot(121)
-        plt.title('Original image')
-        plt.axis('off')
-        plt.imshow(orig_img)
-
-        plt.subplot(122)
-        plt.title('Transformed image')
-        plt.axis('off')
-        plt.imshow(np.array(trans_image[0]))
-        plt.show()
+        # trans_image = sample['image']
+        # plt.figure(figsize=(10, 10))
+        # plt.subplot(121)
+        # plt.title('Original image')
+        # plt.axis('off')
+        # plt.imshow(orig_img)
+        #
+        # plt.subplot(122)
+        # plt.title('Transformed image')
+        # plt.axis('off')
+        # plt.imshow(np.array(trans_image[0]))
+        # plt.show()
 
         return sample
 
@@ -143,8 +143,8 @@ def load_train_val_data(tasks=['EX', 'MA'], data_path='Segmentation.nosync/', ba
         Resize(520),  # resize to 520x782
         RandomCrop(512),
         RandomRotate90(),
-        ImageEnhencer(color_jitter=False, green=green),
-        # ApplyCLAHE(green=green),
+        ImageEnhencer(color_jitter=True, green=False),
+        ApplyCLAHE(green=green),
         ToTensor(green=green)]
 
     ## Image is now (512, 512, 3)
