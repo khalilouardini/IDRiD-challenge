@@ -13,8 +13,8 @@ Your dataset should be divided into 4 folders:
 You can use either the Segmentation.ipynb file (preferably you should store the 'Segmentation.nosync' folder in your google drive and run the notebook using Google Colab after having imported/mounted your drive in your session) or the main.py file.
 
 ## Evaluate our model
-To run inference with our model. download the .pth file from: https://drive.google.com/open?id=1-agXLEX-6y0MgeK75DjLiIXBBTlQV67C
-and run test_model.py. Make sure to change 'save_path' variable to the path where you downloaded the pth file.
+To run inference with our model. download the weights in the .pth file from: https://drive.google.com/open?id=1rmor-yqJew9E16NqFkzRWcx3zck0kD75
+and run test_model.py. Make sure to change 'save_path' variable to the path where you downloaded the weights .pth file.
 
 
 
